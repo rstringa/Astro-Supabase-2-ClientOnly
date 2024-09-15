@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProtectedContent from '../components/ProtectedContent.astro';
+const data = Astro.locals;
+console.log(data);
+---
+<Layout>
+	<main>
+		<h1>Bienvenido a mi sitio</h1>
+		<h2>Middleware: {data?.user?.email ? data?.user.email : 'No hay usuario'}</h2>
+		{ data.user && <p>Titulo: {data?.title}</p> }
+		
+		<p>Este es el contenido principal de la página de inicio.</p>
+	</main>
+		<ProtectedContent>
+				<div class="protected-content">
+					<p>Bienvenido, usuario autenticado. Este contenido es solo para ti.</p>
+				</div>
+		</ProtectedContent>
+		
+
+</Layout>
+
+<style>
+
+	.protected-content{
+		background-color: #9ef966;
+		color: #414141;
+		padding: 20px;
+		border-radius: 10px;
+		font-size: 1.5rem;
+	}
+</style>

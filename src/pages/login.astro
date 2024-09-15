@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProtectedContent from '../components/ProtectedContent.astro';
+import { supabase } from '../lib/supabase';
+
+// Manejar el envío del formulario en el servidor
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const email = formData.get('email');
+  const password = formData.get('password');
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email as string,
+    password: password as string,
+  });
+
+  if (error) {
+    // Manejar el error
+  } else {
+    // Establecer cookies HTTP-only
+    Astro.cookies.set('sb-access-token', data.session.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: data.session.expires_in
+    });
+    Astro.cookies.set('sb-refresh-token', data.session.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 // 30 días
+    });
+
+    return Astro.redirect('/');
+  }
+}
+---
+
+<Layout title="Iniciar sesión">
+  <h1>Iniciar sesión</h1>
+  <form method="POST">
+    <input type="email" name="email" placeholder="Correo electrónico" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Iniciar sesión</button>
+    <p id="login-error"></p>
+  </form>
+  <ProtectedContent>
+    <p>Bienvenido, usuario autenticado. Este contenido es solo para ti.</p>
+  </ProtectedContent>
+</Layout>
+
+<style>
+  #login-error {
+    color: red;
+  }
+</style>

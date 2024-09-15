@@ -1,0 +1,41 @@
+---
+import { supabase } from '../lib/supabase';
+
+const { cookies, redirect } = Astro;
+
+let user = null;
+
+try {
+  const { data, error } = await supabase.auth.getUser();
+  
+  if (error) {
+    // console.error('Error al obtener el usuario:', error.message);
+  } else if (data?.user) {
+    user = data.user;
+    // console.log('Usuario obtenido correctamente');
+  } else {
+    // console.log('No se encontró un usuario autenticado');
+  }
+} catch (error) {
+  // console.error('Error inesperado al obtener el usuario:', error);
+}
+
+// Si no se encontró un usuario, intentar refrescar la sesión
+if (!user) {
+  try {
+    const { data, error } = await supabase.auth.refreshSession();
+    if (error) {
+      // console.error('Error al refrescar la sesión:', error.message);
+    } else if (data?.user) {
+      user = data.user;
+      // console.log('Sesión refrescada correctamente');
+    }
+  } catch (error) {
+    // console.error('Error inesperado al refrescar la sesión:', error);
+  }
+}
+
+---
+{user && (
+  <slot />
+)}

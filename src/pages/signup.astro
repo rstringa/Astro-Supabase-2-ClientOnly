@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Registrarse">
+  <h1>Registrarse</h1>
+  <form id="signup-form">
+    <input type="email" name="email" placeholder="Correo electrónico" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Registrarse</button>
+    <p id="login-error"></p>
+  </form>
+</Layout>
+<style>
+  #login-error {
+    color: red;
+  }
+</style>
+<script>
+  import { supabase } from '../lib/supabase';
+
+  const form = document.querySelector('#signup-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      const mensajeError = traducirError(error.message);
+      document.getElementById('login-error').textContent = mensajeError;
+      return new Response(mensajeError, { status: 500 });
+    } else {
+      // alert('Registro exitoso. Por favor, verifica tu correo electrónico.');
+      window.location.href = '/login';
+    }
+  });
+
+  function traducirError(mensaje) {
+    const traducciones = {
+      'Invalid login credentials': 'Credenciales de inicio de sesión inválidas',
+      'Email not confirmed': 'Correo electrónico no confirmado',
+      'Invalid email or password': 'Correo electrónico o contraseña inválidos',
+      'Password should be at least 6 characters.': 'La contraseña debe tener al menos 6 caracteres.',
+      // Añade más traducciones según sea necesario
+    };
+    return traducciones[mensaje] || 'Error de inicio de sesión';
+  }
+</script>

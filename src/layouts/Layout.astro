@@ -1,0 +1,40 @@
+---
+const data = Astro.locals;
+
+---
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<nav>
+			<a href="/login">Login</a>
+			<a href="/signup">Signup</a>
+		</nav>
+		<p id="user-greeting">Hola {data?.user?.email ? data.user.email : ''}</p>
+		<button id="logout-button">Cerrar sesión</button>
+		
+		<slot />
+	</body>
+</html>
+
+<script>
+
+	 document.getElementById('logout-button').addEventListener('click', async () => {
+	// 	// document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+	// 	// document.cookie = 'sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+	// 	// console.log('Cookies de sesión eliminadas');
+	// 	const { error } = await supabase.auth.signOut();
+		
+	// 	if (error) {
+	// 		alert('Error al cerrar sesión: ' + error.message);
+	// 	} else {
+	// 		alert('Has cerrado sesión exitosamente');
+	 		window.location.href = '/signout';
+
+	});
+</script>
